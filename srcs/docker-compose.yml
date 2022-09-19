@@ -1,0 +1,45 @@
+version: '3'
+
+services:        
+        mariadb:
+                image: mariadb
+                networks:
+                        - inception_nw
+                volumes: 
+                        - /data/mariadb:/var/lib/mysql
+                env_file:
+                        - .env
+                restart: unless-stopped 
+     
+
+        wordpress:
+                image: wordpress:php7.3-fpm-alpine
+                networks:
+                        - inception_nw
+                volumes:
+                        - /data/wordpress:/var/www/html
+                depends_on:
+                        - mariadb
+                env_file:
+                        - .env
+                links:
+                        - mariadb
+                restart: unless-stopped
+
+        nginx:
+                container_name: nginx
+                build:
+                        context: ./requirements/nginx
+                networks: 
+                        - inception_nw
+                volumes:
+                        - /data/wordpress:/var/www/html
+                ports:
+                        - "443:443"
+                links:
+                        - wordpress
+                restart: unless-stopped
+
+networks:
+        inception_nw:
+
