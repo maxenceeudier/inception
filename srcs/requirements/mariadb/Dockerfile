@@ -7,7 +7,11 @@ RUN	apk update && apk upgrade \
 	&& apk add mariadb-client \
 	&& apk add mariadb-server-utils
 
-ENTRYPOINT ["./entrypoint.sh"]
-
 EXPOSE	3306	
 
+COPY ./conf/mariadb.conf /etc/mysql/mariadb.conf.d/
+COPY ./tools /var/www/
+
+RUN service mysql start && mysql < /var/www/init_db.sql && rm -f /var/www/init_db.sql;
+
+CMD ["mysqld"]

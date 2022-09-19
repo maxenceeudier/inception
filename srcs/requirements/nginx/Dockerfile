@@ -10,8 +10,6 @@ RUN 	openssl req -x509 -nodes \
 	-keyout /etc/nginx/ssl/meudier.42.fr.key \
 	-subj "/C=FR/ST=IDF/L=Paris/O=42/OU=42/CN=meudier.42.fr/UID=meudier"
 
-RUN	mkdir -p /var/run/nginx
-
 COPY	conf/nginx.conf /etc/nginx/http.d/default.conf
 
 EXPOSE	443
