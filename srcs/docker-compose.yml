@@ -1,49 +1,100 @@
-version: '3'
+#version: '3'
 
-services:        
-        mariadb:
-                #container_name: mariadb
-                #build: ./requirements/mariadb
-                image: mariadb
-                networks:
-                        - inception_nw
-                volumes: 
-                        - /data/mariadb:/var/lib/mysql
-                env_file:
-                        - .env
-                restart: always 
+#services:        
+#        mariadb:
+#                #container_name: mariadb
+#                #build: ./requirements/mariadb
+#                image: mariadb
+#                networks:
+#                        - inception_nw
+#                volumes: 
+#                        - ~/data/mariadb:/var/lib/mysql
+#                env_file:
+#                        - .env
+#                restart: always 
      
 
-        wordpress:
-                image: wordpress:php7.3-fpm-alpine
-                networks:
-                        - inception_nw
-                volumes:
-                        - /data/wordpress:/var/www/html
-                depends_on:
-                        - mariadb
-                env_file:
-                        - .env
-                links:
-                        - mariadb
-                restart: always
+#        wordpress:
+#                image: wordpress:php7.3-fpm-alpine
+#                networks:
+#                        - inception_nw
+#                volumes:
+#                        - ~/data/wordpress:/var/www/html
+#                depends_on:
+#                        - mariadb
+#                env_file:
+#                        - .env
+#                links:
+#                        - mariadb
+#                restart: always
 
+#        nginx:
+#                #container_name: nginx
+#                #build: ./requirements/nginx
+#                image: nginx
+#                depends_on:
+#                        - wordpress
+#                networks: 
+#                        - inception_nw
+#                volumes:
+#                        - ~/data/wordpress:/var/www/html
+#                ports:
+#                        - 8080:80
+                        #- "443:443"
+#                links:
+#                        - wordpress
+#                restart: always
+
+#networks:
+#        inception_nw:
+#                driver: bridge
+
+version: '3'
+services:
         nginx:
-                #container_name: nginx
-                #build: ./requirements/nginx
-                image: nginx
                 depends_on:
                         - wordpress
                 networks: 
                         - inception_nw
+                container_name: nginx
+                build: ./requirements/nginx
                 volumes:
-                        - /data/wordpress:/var/www/html
+                        - wordpress:/var/www/html
                 ports:
-                        - "443:443"
+                        - 443:80
+                restart: always
                 links:
                         - wordpress
-                restart: always
 
+        mariadb:
+                image: mysql:latest
+                networks: 
+                        - inception_nw
+                volumes:
+                        - mariadb:/var/lib/mysql
+                restart: always
+                env_file:
+                        - .env
+        wordpress:
+                container_name: wordpress
+                build: ./requirements/wordpress
+                depends_on:
+                        - mariadb
+                networks: 
+                        - inception_nw
+                #image: wordpress:latest
+                volumes:
+                        - wordpress:/var/www/html/
+                #ports:
+                #        - "9000:80"
+                #restart: always
+                env_file:
+                        - .env
+
+volumes:
+        mariadb: {}
+        wordpress: {}
 networks:
         inception_nw:
-
+                name: inception_nw
+                driver: bridge

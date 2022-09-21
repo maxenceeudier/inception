@@ -1,16 +1,34 @@
-FROM	debian:buster
+FROM debian:buster
 
-RUN	apt-get update && apt-get upgrade \
-	&& apt-get install php libapache2-mod-php php-mysql
+#Install necessary package from php
 
-ADD 	. ./tool
+RUN apt-get update && apt-get -y install \
+wget \
+php \
+php-cgi \
+php-mysql \
+php-fpm \
+php-pdo \
+php-gd php-cli \
+php-mbstring \
+&& rm -rf /var/lib/apt/lists/*
 
-WORKDIR	./tool
+#Copy the necessary tools to download wordpress
 
-RUN	npm install
+COPY ./conf/www.conf /etc/php/7.3/fpm/pool.d
 
-EXPOSE	4242
+#Create the folder to enable php start
 
-VOLUME	./tool/logs
+#RUN mkdir /run/php
 
-CMD	npm run start
+WORKDIR /var/www/html/
+
+#Launch script
+COPY ./tools/create_wordpress.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/create_wordpress.sh
+ENTRYPOINT ["create_wordpress.sh"]
+
+
+EXPOSE 9000
+
+CMD ["/usr/sbin/php-fpm7.3", "-F"]
