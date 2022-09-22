@@ -61,7 +61,7 @@ services:
                 volumes:
                         - wordpress:/var/www/html
                 ports:
-                        - 443:80
+                        - 443:443
                 restart: always
                 links:
                         - wordpress
@@ -82,12 +82,9 @@ services:
                         - mariadb
                 networks: 
                         - inception_nw
-                #image: wordpress:latest
                 volumes:
                         - wordpress:/var/www/html/
-                #ports:
-                #        - "9000:80"
-                #restart: always
+                restart: always
                 env_file:
                         - .env
 
