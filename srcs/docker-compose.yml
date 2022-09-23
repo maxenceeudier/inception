@@ -1,97 +1,44 @@
-#version: '3'
-
-#services:        
-#        mariadb:
-#                #container_name: mariadb
-#                #build: ./requirements/mariadb
-#                image: mariadb
-#                networks:
-#                        - inception_nw
-#                volumes: 
-#                        - ~/data/mariadb:/var/lib/mysql
-#                env_file:
-#                        - .env
-#                restart: always 
-     
-
-#        wordpress:
-#                image: wordpress:php7.3-fpm-alpine
-#                networks:
-#                        - inception_nw
-#                volumes:
-#                        - ~/data/wordpress:/var/www/html
-#                depends_on:
-#                        - mariadb
-#                env_file:
-#                        - .env
-#                links:
-#                        - mariadb
-#                restart: always
-
-#        nginx:
-#                #container_name: nginx
-#                #build: ./requirements/nginx
-#                image: nginx
-#                depends_on:
-#                        - wordpress
-#                networks: 
-#                        - inception_nw
-#                volumes:
-#                        - ~/data/wordpress:/var/www/html
-#                ports:
-#                        - 8080:80
-                        #- "443:443"
-#                links:
-#                        - wordpress
-#                restart: always
-
-#networks:
-#        inception_nw:
-#                driver: bridge
-
 version: '3'
 services:
         nginx:
-                depends_on:
-                        - wordpress
-                networks: 
-                        - inception_nw
                 container_name: nginx
                 build: ./requirements/nginx
                 volumes:
                         - wordpress:/var/www/html
                 ports:
-                        - 443:443
+                         - 443:443
+                networks:
+                         - network
                 restart: always
-                links:
-                        - wordpress
-
         mariadb:
-                image: mysql:latest
-                networks: 
-                        - inception_nw
+                image: mariadb
                 volumes:
                         - mariadb:/var/lib/mysql
+                networks:
+                        - network
+                ports:
+                        - 3306:3306
                 restart: always
                 env_file:
                         - .env
         wordpress:
                 container_name: wordpress
                 build: ./requirements/wordpress
-                depends_on:
-                        - mariadb
-                networks: 
-                        - inception_nw
                 volumes:
-                        - wordpress:/var/www/html/
+                        - wordpress:/var/www/html
+                ports:
+                        - 9000:9000
+                networks:
+                         - network
                 restart: always
                 env_file:
                         - .env
-
+                depends_on:
+                        - mariadb
+                
 volumes:
         mariadb: {}
         wordpress: {}
 networks:
-        inception_nw:
-                name: inception_nw
+        network:
                 driver: bridge
