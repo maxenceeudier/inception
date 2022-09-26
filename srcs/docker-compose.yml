@@ -11,7 +11,9 @@ services:
                          - network
                 restart: always
         mariadb:
-                image: mariadb
+                container_name: mariadb
+                build: ./requirements/mariadb
+                #image: mariadb
                 volumes:
                         - mariadb:/var/lib/mysql
                 networks:

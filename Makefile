@@ -4,8 +4,7 @@ all:
 down:
 	@docker-compose -f ./srcs/docker-compose.yml down
 
-re:
-	@docker-compose -f srcs/docker-compose.yml up -d --build
+re: clean all
 
 clean:
 	@docker stop $$(docker ps -qa);\

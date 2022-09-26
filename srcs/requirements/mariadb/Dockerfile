@@ -1,17 +1,24 @@
-FROM	alpine:3.15
+FROM debian:buster
 
-RUN	apk update && apk upgrade \
-	&& apk add openrc \
-	&& apk add mariadb \
-	&& apk add mariadb-common \
-	&& apk add mariadb-client \
-	&& apk add mariadb-server-utils
+RUN	apt-get update && apt-get -y install mariadb-server mariadb-client \
+	&& rm -rf /var/lib/apt/lists/* \
+	# purge and re-create /var/lib/mysql with appropriate ownership
+	&& mkdir -p /var/run/mysqld \
+	&& chown -R mysql:mysql /var/run/mysqld \
+	# ensure that /var/run/mysqld (used for socket and lock files) is writable regardless of the UID our mysqld instance ends up having at runtime
+	&& chmod 777 /var/run/mysqld
 
-EXPOSE	3306	
+# COPY  ./conf/mariadb.conf /etc/mysql/my.cnf;
+# COPY  ./conf/mariadb.conf /etc/my.cnf;
+# COPY  ./conf/mariadb.conf ~/my.cnf;
 
-COPY ./conf/mariadb.conf /etc/mysql/mariadb.conf.d/
-COPY ./tools /var/www/
+EXPOSE 3306
 
-RUN service mysql start && mysql < /var/www/init_db.sql && rm -f /var/www/init_db.sql;
+COPY	./tools/create_database.sh /usr/local/bin/
+RUN		chmod +x /usr/local/bin/create_database.sh
+RUN 	mkdir /usr/local/bin/wordpress.sql 
 
-CMD ["mysqld"]
+ENTRYPOINT ["create_database.sh"]
+
+#Command to launch mariadb and enable the database to listen globally
+CMD ["mysqld", "--bind-address=0.0.0.0"]
