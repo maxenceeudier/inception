@@ -40,6 +40,19 @@ services:
                 depends_on:
                         - mariadb
                 
+# volumes:
+#         mariadb:
+#                 driver: local
+#                 driver_opts:
+#                         type: none
+#                         device: /home/meudier/data/mariadb
+#                         o: bind
+#         wordpress:
+#                 driver: local
+#                 driver_opts:
+#                         type: none
+#                         device: /home/meudier/data/wordpress
+#                         o: bind
 volumes:
         mariadb: {}
         wordpress: {}
