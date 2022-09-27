@@ -13,6 +13,7 @@ php-mbstring \
 && rm -rf /var/lib/apt/lists/*
 
 #change the php conf with my own www.conf
+RUN     rm -rf /etc/php/7.3/fpm/pool.d/www.conf
 COPY    ./conf/www.conf /etc/php/7.3/fpm/pool.d/
 
 #Create the folder to enable php start
