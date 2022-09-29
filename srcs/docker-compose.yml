@@ -53,10 +53,6 @@ volumes:
                         type: none
                         device: /home/meudier/data/wordpress
                         o: bind
-#volumes:
-#        mariadb: {}
-#        wordpress: {}
-
 networks:
         network:
                 driver: bridge
